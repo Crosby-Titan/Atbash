@@ -22,7 +22,12 @@ namespace Atbash.Extensions
         {
             int code = Math.Abs(encoding.GetSymbolCode('a') - 1 - c);
 
-            return code > 26 ? encoding.GetLatinOrderNumber('a') : code;
+            if (code < encoding.GetSymbolCode('a'))
+                return encoding.GetLatinOrderNumber('z') - code;
+            else if (code > encoding.GetSymbolCode('z'))
+                return encoding.GetSymbolCode('a') + (encoding.GetSymbolCode('z') - code);
+            else
+                return code;
         }
     }
 }

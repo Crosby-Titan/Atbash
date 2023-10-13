@@ -7,7 +7,7 @@ using Atbash.Extensions;
 
 namespace Atbash.LanguageSettings
 {
-    internal class LatinLanguageSettings : ILanguageSettings<(string lang, int count)>
+    internal class LatinLanguageSettings : ILanguageSettings<LanguageParams>
     {
         private readonly string _language;
         private const int _symbolsCount = 26;
@@ -23,14 +23,19 @@ namespace Atbash.LanguageSettings
             return Encoding.Unicode.GetLatinOrderNumber(value);
         }
 
-        public (string lang, int count) GetSettings()
+        public LanguageParams GetSettings()
         {
-            return (lang: _language, count: _symbolsCount);
+            return new LanguageParams { Language = _language, SymbolsCount = _symbolsCount };
         }
 
         public char GetSymbol(int c)
         {
             return Encoding.Unicode.GetSymbol(_firstLetterCode + c);
+        }
+
+        public static ILanguageSettings<LanguageParams> CreateSettings()
+        {
+            return new LatinLanguageSettings();
         }
     }
 }

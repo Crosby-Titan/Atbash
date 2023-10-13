@@ -22,77 +22,120 @@ namespace Atbash
     /// </summary>
     public partial class MainWindow : Window
     {
-        private string[] _symbolsType = { "Латиница", "Кириллица" };
-        private ICryptoService<string, string>? _atbashCryptography = null;
+        //private string[] _symbolsType = new[] { "Латиница", "Кириллица" };
+        private IDictionary<string, string> _cryptographyMethod;
+        private IDictionary<string, Func<ILanguageSettings<LanguageParams>>> _symbolsType;
+        private ICryptoService<string, string>? _cryptography = null;
         public MainWindow()
         {
             InitializeComponent();
-            this.Height = SystemParameters.PrimaryScreenHeight;
-            this.Width = SystemParameters.PrimaryScreenWidth;
-            this.LanguageList.ItemsSource = _symbolsType;
+            Height = SystemParameters.PrimaryScreenHeight;
+            Width = SystemParameters.PrimaryScreenWidth;
+
+            _cryptographyMethod = new Dictionary<string, string>
+            {
+                {"Метод атбаша", nameof(AtbashMethod)},
+                {"Шифр цезаря",nameof(ROT) }
+            };
+
+            _symbolsType = new Dictionary<string, Func<ILanguageSettings<LanguageParams>>>
+            {
+                { "Латиница", LatinLanguageSettings.CreateSettings },
+                { "Кириллица", CyrillicLanguageSettings.CreateSettings }
+            };
+
+            LanguageList.ItemsSource = _symbolsType.Keys;
+            CryptoMethodList.ItemsSource = _cryptographyMethod.Keys;
         }
 
         private void ComputeBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (!CheckInputText()) return;
+            bool validUserInput = CheckSelectedMethod()
+                && CheckInputText()
+                && CheckSelectedAlphabet();
 
-            CheckSettings();
-
-            CheckMethod();
-        }
-
-        private void InitializeMethod(ILanguageSettings<(string lang,int count)> settings)
-        {
-            this._atbashCryptography = new AtbashMethod(settings);
-        }
-
-        private void CheckSettings()
-        {
-            switch (this.LanguageList.SelectedIndex)
+            if (validUserInput)
             {
-                case 0:
-                    InitializeMethod(new LatinLanguageSettings());
-                    break;
-                case 1:
-                    InitializeMethod(new CyrillicLanguageSettings());
-                    break;
-                default:
-                    MessageBox.Show("Не выбран алфавит!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-                    break;
-            }
-        }
-
-        private void CheckMethod()
-        {
-            if (this.DecryptionMethod.IsChecked == true)
-            {
-                this.FinalText.Text = $"{_atbashCryptography?.Decrypt(this.InitialText.Text.Trim())}";
-            }
-            else if (this.EncryptionMethod.IsChecked == true)
-            {
-                this.FinalText.Text = $"{_atbashCryptography?.Encrypt(this.InitialText.Text.Trim())}";
+                Process();
             }
             else
             {
-                MessageBox.Show("Не выбран метод!", 
-                    "Ошибка", 
-                    MessageBoxButton.OK, 
+                MessageBox.Show("Что-то пошло не так.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void InitializeMethod(ILanguageSettings<LanguageParams> settings, string cryptoMethod)
+        {
+            switch (cryptoMethod)
+            {
+                case nameof(AtbashMethod):
+                    _cryptography = new AtbashMethod(settings);
+                    break;
+                case nameof(ROT):
+                    _cryptography = new ROT(settings, true);
+                    break;
+                default:
+                    _cryptography = new AtbashMethod(settings);
+                    break;
+            }
+        }
+
+
+        private void Process()
+        {
+            GetInput();
+
+            if (DecryptionMethod.IsChecked == true)
+            {
+                FinalText.Text = $"{_cryptography?.Decrypt(InitialText.Text.Trim())}";
+            }
+            else if (EncryptionMethod.IsChecked == true)
+            {
+                FinalText.Text = $"{_cryptography?.Encrypt(InitialText.Text.Trim())}";
+            }
+            else
+            {
+                MessageBox.Show("Не выбран метод!",
+                    "Ошибка",
+                    MessageBoxButton.OK,
                     MessageBoxImage.Error);
             }
         }
 
         private bool CheckInputText()
         {
-            if(this.InitialText.Text == null || this.InitialText.Text.Length < 1)
+            if (this.InitialText.Text == null || this.InitialText.Text.Length < 1)
             {
                 MessageBox.Show("Не введён текст!",
                     "Ошибка",
-                    MessageBoxButton.OK, 
+                    MessageBoxButton.OK,
                     MessageBoxImage.Error);
                 return false;
             }
 
             return true;
+        }
+
+        private bool CheckSelectedMethod()
+        {
+            return this.CryptoMethodList.SelectedIndex == -1;
+        }
+
+        private bool CheckSelectedAlphabet()
+        {
+            return this.LanguageList.SelectedIndex == -1;
+        }
+
+        private void GetInput()
+        {
+
+            string? cryptoMethod = CryptoMethodList.SelectedValue.ToString();
+            string? language = LanguageList.SelectedValue.ToString();
+
+            if (cryptoMethod == null || language == null)
+                throw new ArgumentNullException(nameof(cryptoMethod));
+
+            InitializeMethod(_symbolsType[language].Invoke(), _cryptographyMethod[cryptoMethod]);
         }
     }
 }

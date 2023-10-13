@@ -17,12 +17,12 @@ namespace Atbash.Cryptography
         private readonly StringBuilder _stringBuilder;
         private const int _symbolOffset = 1;
         private readonly int _alphabetCount;
-        public AtbashMethod(ILanguageSettings<(string lang, int count)> languageSettings) : this()
+        public AtbashMethod(ILanguageSettings<LanguageParams> languageSettings) : this()
         {
 
             LanguageSettings = languageSettings ?? throw new ArgumentNullException(nameof(languageSettings));
             var settings = languageSettings.GetSettings();
-            _alphabetCount = settings.count;
+            _alphabetCount = settings.SymbolsCount;
 
         }
 
@@ -35,7 +35,7 @@ namespace Atbash.Cryptography
 
         public string? GetOriginText { get { return _initialText; } }
 
-        private ILanguageSettings<(string lang, int count)>? LanguageSettings { get; set; }
+        private ILanguageSettings<LanguageParams>? LanguageSettings { get; set; }
 
         public string Encrypt(string? data = null)
         {
@@ -68,8 +68,8 @@ namespace Atbash.Cryptography
             {
                 char c = _stringBuilder[i];
 
-                if(char.IsDigit(c) || c.IsServiceSymbol() || c == ' ')
-                   continue;
+                if (char.IsDigit(c) || c.IsServiceSymbol() || c == ' ')
+                    continue;
 
                 int code = ((_alphabetCount - LanguageSettings.GetOrderedSymbolNumber(c)) + _symbolOffset);
                 _stringBuilder[i] = LanguageSettings.GetSymbol(code);

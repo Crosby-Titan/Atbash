@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace Atbash.LanguageSettings
 {
-    internal class CyrillicLanguageSettings : ILanguageSettings<(string lang, int count)>
+    internal class CyrillicLanguageSettings : ILanguageSettings<LanguageParams>
     {
         private const string _language = "ru";
         private const string _alphabet = "\0абвгдеёжзийклмнопрстуфхцчшщъыьэюя";
-        public (string lang, int count) GetSettings()
+        public LanguageParams GetSettings()
         {
-            return (lang: _language, count: _alphabet.Length - 1);
+            return new LanguageParams { Language = _language, SymbolsCount = _alphabet.Length };
         }
 
         public int GetOrderedSymbolNumber(char value)
@@ -22,7 +22,17 @@ namespace Atbash.LanguageSettings
 
         public char GetSymbol(int index)
         {
-            return _alphabet[index > _alphabet.Length - 1 ? 0 : index];
+            if (index < 0)
+                return _alphabet[(_alphabet.Length - 1) + index];
+            else if (index >= _alphabet.Length)
+                return _alphabet[1 + index];
+            else
+                return _alphabet[index];
+        }
+
+        public static ILanguageSettings<LanguageParams> CreateSettings()
+        {
+            return new CyrillicLanguageSettings();
         }
     }
 }

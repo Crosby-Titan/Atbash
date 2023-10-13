@@ -39,5 +39,7 @@
             <RadioButton x:Name="EncryptionMethod" Grid.Column="0" Content="Шифрование" HorizontalAlignment="Left" Margin="37,47,0,0" Grid.Row="1" VerticalAlignment="Top" Height="50" Width="286"/>
         </Grid>
         <Button x:Name="ComputeBtn" Content="Выполнить" HorizontalAlignment="Left" Grid.Row="2" VerticalAlignment="Top" Height="79" Width="238" FontSize="30" Margin="252,96,0,0" Click="ComputeBtn_Click"/>
+        <ComboBox x:Name="CryptoMethodList" HorizontalAlignment="Left" Margin="214,134,0,0" VerticalAlignment="Top" Width="253" Height="34"/>
+        <Label Grid.Column="0" HorizontalAlignment="Left" Margin="26,128,0,0" Content="Шифрование:" VerticalAlignment="Top" Width="183" Height="46" FontSize="25"/>
     </Grid>
 </Window>
