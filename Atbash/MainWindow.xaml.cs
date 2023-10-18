@@ -69,7 +69,7 @@ namespace Atbash
                     break;
                 case nameof(ROT):
                     var data = ElementsWorker.GetSerializedData($"{nameof(ROT)}");
-                    _cryptography = new ROT(data?.symbolOffset, settings,data?.isRightOffset);
+                    _cryptography = new ROT(int.Parse(data?.symbolOffset), settings,bool.Parse(data?.isRightOffset));
                     break;
                 default:
                     _cryptography = new AtbashMethod(settings);
@@ -115,12 +115,12 @@ namespace Atbash
 
         private bool CheckSelectedMethod()
         {
-            return this.CryptoMethodList.SelectedIndex == -1;
+            return this.CryptoMethodList.SelectedIndex > -1;
         }
 
         private bool CheckSelectedAlphabet()
         {
-            return this.LanguageList.SelectedIndex == -1;
+            return this.LanguageList.SelectedIndex > -1;
         }
 
         private void GetInput()
