@@ -7,6 +7,8 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using Atbash.LanguageSettings;
+using Atbash.Extensions;
+using System.Windows.Xps.Serialization;
 
 namespace Atbash.Cryptography
 {
@@ -16,10 +18,12 @@ namespace Atbash.Cryptography
         private string? _decryptedText;
         private readonly StringBuilder _stringBuilder;
         private readonly int _symbolOffset;
+        private readonly bool _isRightOffset;
 
         public ROT(int offset, ILanguageSettings<LanguageParams>? languageSettings, bool rightOffset) : this()
         {
-            _symbolOffset = rightOffset ? offset : -offset;
+            _isRightOffset = rightOffset;
+            _symbolOffset = _isRightOffset ? offset : -offset;
             LanguageSettings = languageSettings ?? throw new ArgumentNullException(nameof(languageSettings));
         }
 
@@ -42,16 +46,47 @@ namespace Atbash.Cryptography
 
             _initialText = data ?? throw new ArgumentNullException(nameof(data));
 
-            return ROTMethod();
+            return ROTMethodDecrypt();
         }
 
-        private string ROTMethod()
+        private string ROTMethodDecrypt()
+        {
+            _decryptedText = "";
+            int decryptOffset = _isRightOffset ? -_symbolOffset : Math.Abs(_symbolOffset);
+
+            for (int i = 0; i < _initialText?.Length; i++)
+            {
+                char letter = _initialText[i];
+
+                if (char.IsDigit(letter) || letter.IsServiceSymbol() || Char.IsWhiteSpace(letter))
+                {
+                    _stringBuilder.Append(letter);
+                    continue;
+                }
+
+                int code = LanguageSettings.GetOrderedSymbolNumber(letter) + decryptOffset;
+
+                _stringBuilder.Append(LanguageSettings.GetSymbol(code));
+            }
+
+            _decryptedText = _stringBuilder.ToString();
+
+            return _decryptedText;
+        }
+
+        private string ROTMethodEncrypt()
         {
             _decryptedText = "";
 
             for (int i = 0; i < _initialText?.Length; i++)
             {
                 char letter = _initialText[i];
+
+                if (char.IsDigit(letter) || letter.IsServiceSymbol() || Char.IsWhiteSpace(letter))
+                {
+                    _stringBuilder.Append(letter);
+                    continue;
+                }
 
                 int code = LanguageSettings.GetOrderedSymbolNumber(letter) + _symbolOffset;
 
@@ -67,7 +102,7 @@ namespace Atbash.Cryptography
         {
             _initialText = data ?? throw new ArgumentNullException(nameof(data));
 
-            return ROTMethod();
+            return ROTMethodEncrypt();
         }
 
         public static ComboBoxItem CreateComboBoxItem()

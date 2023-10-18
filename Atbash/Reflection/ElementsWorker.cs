@@ -42,5 +42,35 @@ namespace Atbash.Reflection
 
             return data;
         }
+
+        public static dynamic ParseData(dynamic data)
+        {
+            switch (data.ValueKind)
+            {
+                case JsonValueKind.String:
+                    {
+                        bool isDigit = false;
+                        foreach (var ch in $"{data}")
+                        {
+                            if (Char.IsDigit(ch))
+                                isDigit = true;
+                            else
+                                isDigit = false;
+                        }
+
+                        if (isDigit)
+                            goto case JsonValueKind.Number;
+                        else
+                            return $"{data}";
+                    }
+                case JsonValueKind.Number:
+                    return int.Parse($"{data}");
+                case JsonValueKind.True:
+                case JsonValueKind.False:
+                    return bool.Parse($"{data}");
+                default:
+                    return string.Empty;
+            }
+        }
     }
 }

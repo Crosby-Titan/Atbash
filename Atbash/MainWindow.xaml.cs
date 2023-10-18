@@ -69,7 +69,10 @@ namespace Atbash
                     break;
                 case nameof(ROT):
                     var data = ElementsWorker.GetSerializedData($"{nameof(ROT)}");
-                    _cryptography = new ROT(int.Parse(data?.symbolOffset), settings,bool.Parse(data?.isRightOffset));
+                    _cryptography = new ROT(
+                        ElementsWorker.ParseData(data?.symbolOffset), 
+                        settings,
+                        ElementsWorker.ParseData(data?.isRightOffset));
                     break;
                 default:
                     _cryptography = new AtbashMethod(settings);
@@ -77,18 +80,17 @@ namespace Atbash
             }
         }
 
-
         private void Process()
         {
             GetInput();
 
             if (DecryptionMethod.IsChecked == true)
             {
-                FinalText.Text = $"{_cryptography?.Decrypt(InitialText.Text.Trim())}";
+                FinalText.Text = $"{_cryptography?.Decrypt(InitialText.Text.Trim().ToLower())}";
             }
             else if (EncryptionMethod.IsChecked == true)
             {
-                FinalText.Text = $"{_cryptography?.Encrypt(InitialText.Text.Trim())}";
+                FinalText.Text = $"{_cryptography?.Encrypt(InitialText.Text.Trim().ToLower())}";
             }
             else
             {

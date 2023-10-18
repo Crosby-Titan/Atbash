@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Atbash"
         mc:Ignorable="d"
         Title="Метод Атбаша" Height="1024" Width="1280">
-    <Grid ShowGridLines="True" RenderTransformOrigin="0.497,0.501">
+    <Grid ShowGridLines="False" RenderTransformOrigin="0.497,0.501">
         <Grid.ColumnDefinitions>
             <ColumnDefinition></ColumnDefinition>
             <ColumnDefinition Width="5"></ColumnDefinition>
@@ -20,7 +20,7 @@
         </Grid.RowDefinitions>
         <Label Grid.Column="1" Content="" FontSize="30" FontStyle="Normal" FontWeight="SemiBold" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,10,0,0" FontFamily="Copperplate Gothic Bold"/>
         <ComboBox x:Name="LanguageList" Grid.Column="0" HorizontalAlignment="Left" Margin="214,74,0,0" VerticalAlignment="Top" Width="253" Height="34"/>
-        <Label Grid.Column="0" HorizontalAlignment="Left" Margin="26,68,0,0" Content="Язык: " VerticalAlignment="Top" Width="84" Height="46" FontSize="25"/>
+        <Label Grid.Column="0" HorizontalAlignment="Left" Margin="26,68,0,0" Content="Алфавит:" VerticalAlignment="Top" Width="138" Height="46" FontSize="25"/>
         <Label Grid.Column="0" Content="Изначальный текст" FontSize="30" FontStyle="Normal" FontWeight="SemiBold" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0,10,0,0" FontFamily="Copperplate Gothic Bold"/>
         <Label Grid.Column="2" Content="Результат" FontSize="30" FontStyle="Normal" FontWeight="SemiBold" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0,10,0,0" FontFamily="Copperplate Gothic Bold"/>
         <TextBox x:Name="InitialText" HorizontalAlignment="Center" Background="LightGray" Grid.Row="1" Text=" " TextWrapping="Wrap" VerticalAlignment="Center" Width="525" Height="274"/>
