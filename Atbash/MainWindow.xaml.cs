@@ -14,6 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Atbash.Cryptography;
 using Atbash.LanguageSettings;
+using Atbash.Reflection;
 
 namespace Atbash
 {
@@ -22,8 +23,7 @@ namespace Atbash
     /// </summary>
     public partial class MainWindow : Window
     {
-        //private string[] _symbolsType = new[] { "Латиница", "Кириллица" };
-        private IDictionary<string, string> _cryptographyMethod;
+        private IEnumerable<ComboBoxItem> _cryptographyMethod;
         private IDictionary<string, Func<ILanguageSettings<LanguageParams>>> _symbolsType;
         private ICryptoService<string, string>? _cryptography = null;
         public MainWindow()
@@ -32,20 +32,16 @@ namespace Atbash
             Height = SystemParameters.PrimaryScreenHeight;
             Width = SystemParameters.PrimaryScreenWidth;
 
-            _cryptographyMethod = new Dictionary<string, string>
-            {
-                {"Метод атбаша", nameof(AtbashMethod)},
-                {"Шифр цезаря",nameof(ROT) }
-            };
+            _cryptographyMethod = ElementsWorker.GetComboBoxItems();
 
             _symbolsType = new Dictionary<string, Func<ILanguageSettings<LanguageParams>>>
             {
                 { "Латиница", LatinLanguageSettings.CreateSettings },
                 { "Кириллица", CyrillicLanguageSettings.CreateSettings }
             };
-
+            
             LanguageList.ItemsSource = _symbolsType.Keys;
-            CryptoMethodList.ItemsSource = _cryptographyMethod.Keys;
+            CryptoMethodList.ItemsSource = _cryptographyMethod;
         }
 
         private void ComputeBtn_Click(object sender, RoutedEventArgs e)
@@ -64,7 +60,7 @@ namespace Atbash
             }
         }
 
-        private void InitializeMethod(ILanguageSettings<LanguageParams> settings, string cryptoMethod)
+        private void InitializeMethod(ILanguageSettings<LanguageParams> settings, string? cryptoMethod)
         {
             switch (cryptoMethod)
             {
@@ -72,7 +68,8 @@ namespace Atbash
                     _cryptography = new AtbashMethod(settings);
                     break;
                 case nameof(ROT):
-                    _cryptography = new ROT(settings, true);
+                    var data = ElementsWorker.GetSerializedData($"{nameof(ROT)}");
+                    _cryptography = new ROT(data?.symbolOffset, settings,data?.isRightOffset);
                     break;
                 default:
                     _cryptography = new AtbashMethod(settings);
@@ -129,13 +126,13 @@ namespace Atbash
         private void GetInput()
         {
 
-            string? cryptoMethod = CryptoMethodList.SelectedValue.ToString();
+            var cryptoMethod = (CryptoMethodList.SelectedValue as ComboBoxItem)?.Content as StackPanel;
             string? language = LanguageList.SelectedValue.ToString();
 
             if (cryptoMethod == null || language == null)
                 throw new ArgumentNullException(nameof(cryptoMethod));
 
-            InitializeMethod(_symbolsType[language].Invoke(), _cryptographyMethod[cryptoMethod]);
+            InitializeMethod(_symbolsType[language].Invoke(), (cryptoMethod.Children[0] as Label)?.Content?.ToString());
         }
     }
 }

@@ -1,20 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 using Atbash.LanguageSettings;
 
 namespace Atbash.Cryptography
 {
-    class ROT : ICryptoService<string, string>
+    public class ROT : ICryptoService<string, string>
     {
         private string? _initialText;
         private string? _decryptedText;
         private readonly StringBuilder _stringBuilder;
         private readonly int _symbolOffset;
 
-        public ROT(int offset, ILanguageSettings<LanguageParams>? languageSettings,bool rightOffset): this()
+        public ROT(int offset, ILanguageSettings<LanguageParams>? languageSettings, bool rightOffset) : this()
         {
             _symbolOffset = rightOffset ? offset : -offset;
             LanguageSettings = languageSettings ?? throw new ArgumentNullException(nameof(languageSettings));
@@ -46,7 +49,7 @@ namespace Atbash.Cryptography
         {
             _decryptedText = "";
 
-            for(int i = 0; i < _initialText.Length;i++)
+            for (int i = 0; i < _initialText?.Length; i++)
             {
                 char letter = _initialText[i];
 
@@ -66,5 +69,79 @@ namespace Atbash.Cryptography
 
             return ROTMethod();
         }
+
+        public static ComboBoxItem CreateComboBoxItem()
+        {
+            var boxItem = new ComboBoxItem();
+
+            var margin = new System.Windows.Thickness(5, 5, 5, 5);
+
+            boxItem.Content = new StackPanel
+            {
+                Orientation = Orientation.Vertical,
+                Children =
+                {
+                    new Label{Content = nameof(ROT) },
+                    new StackPanel
+                    {
+                        Orientation = Orientation.Horizontal,
+                        Children =
+                        {
+                            new StackPanel
+                            {
+                                Orientation = Orientation.Vertical,
+                                Children =
+                                {
+                                    new Label
+                                    {
+                                        Content = "Смещение",
+                                        Margin = margin
+                                    },
+                                    new TextBox{Margin = margin}
+                                },
+                                Margin = margin
+                            },
+                            new StackPanel
+                            {
+                                Orientation= Orientation.Horizontal,
+                                Children =
+                                {
+                                    new Label
+                                    {
+                                        Content = "Правое смещение: ",
+                                        Margin = margin
+                                    },
+                                    new CheckBox{Margin = margin}
+                                },
+                                Margin = margin
+                            },
+                        }
+                    }
+                }
+            };
+
+            boxItem.Selected += (sender, e) =>
+            {
+                var inputData = boxItem.Content as StackPanel;
+                var neccessaryData = inputData?.Children[1] as StackPanel;
+
+                var data1 = neccessaryData?.Children[0] as StackPanel;
+                var data2 = neccessaryData?.Children[1] as StackPanel;
+
+                var serializeData = new
+                {
+                    symbolOffset = (data1?.Children[1] as TextBox)?.Text,
+                    isRightOffset = (data2?.Children[1] as CheckBox)?.IsChecked
+                };
+
+                using (var serializeStream = new FileStream($"SerializedData\\{nameof(ROT)}.json", FileMode.Create))
+                {
+                    JsonSerializer.Serialize(serializeStream, serializeData);
+                }
+            };
+
+            return boxItem;
+        }
     }
 }
+

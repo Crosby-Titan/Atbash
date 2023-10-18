@@ -7,10 +7,13 @@ using System.Threading.Tasks;
 using Atbash.LanguageSettings;
 using Atbash.Extensions;
 using static System.Net.Mime.MediaTypeNames;
+using System.CodeDom;
+using System.Windows.Controls;
+using System.Windows.Documents;
 
 namespace Atbash.Cryptography
 {
-    class AtbashMethod : ICryptoService<string, string>
+    public class AtbashMethod : ICryptoService<string, string>
     {
         private string? _initialText;
         private string? _decryptedText;
@@ -78,5 +81,22 @@ namespace Atbash.Cryptography
             _decryptedText = _stringBuilder.ToString();
             return _decryptedText;
         }
+
+        public static ComboBoxItem CreateComboBoxItem()
+        {
+            var boxItem = new ComboBoxItem();
+
+            boxItem.Content = new StackPanel
+            {
+                Orientation = Orientation.Vertical,
+                Children =
+                {
+                    new Label{Content = nameof(AtbashMethod) }
+                }
+            };
+
+            return boxItem;
+        }
+
     }
 }

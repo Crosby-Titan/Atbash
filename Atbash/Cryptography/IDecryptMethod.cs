@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Atbash.Cryptography
 {
-    interface IDecryptMethod<in V, out T>
+    public interface IDecryptMethod<in V, out T>
     {
         public T Decrypt(V data);
     }

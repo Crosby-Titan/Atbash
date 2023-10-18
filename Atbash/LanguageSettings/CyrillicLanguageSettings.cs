@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Atbash.LanguageSettings
 {
-    internal class CyrillicLanguageSettings : ILanguageSettings<LanguageParams>
+    public class CyrillicLanguageSettings : ILanguageSettings<LanguageParams>
     {
         private const string _language = "ru";
         private const string _alphabet = "\0абвгдеёжзийклмнопрстуфхцчшщъыьэюя";

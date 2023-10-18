@@ -7,7 +7,7 @@ using Atbash.Extensions;
 
 namespace Atbash.LanguageSettings
 {
-    internal class LatinLanguageSettings : ILanguageSettings<LanguageParams>
+    public  class LatinLanguageSettings : ILanguageSettings<LanguageParams>
     {
         private readonly string _language;
         private const int _symbolsCount = 26;

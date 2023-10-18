@@ -8,7 +8,7 @@ using System.Windows;
 
 namespace Atbash.LanguageSettings
 {
-    internal interface ILanguageSettings<T>
+    public interface ILanguageSettings<T>
     {
         T GetSettings();
         int GetOrderedSymbolNumber(char c);

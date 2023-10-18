@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Atbash.LanguageSettings
 {
-    struct LanguageParams
+    public struct LanguageParams
     {
         public string Language;
         public int SymbolsCount;
