@@ -69,10 +69,20 @@ namespace Atbash
                     break;
                 case nameof(ROT):
                     var data = ElementsWorker.GetSerializedData($"{nameof(ROT)}");
-                    _cryptography = new ROT(
-                        ElementsWorker.ParseData(data?.symbolOffset), 
-                        settings,
-                        ElementsWorker.ParseData(data?.isRightOffset));
+                    var offset = ElementsWorker.ParseData(data?.symbolOffset);
+                    var rightOffset = ElementsWorker.ParseData(data?.isRightOffset);
+
+                    if(!ElementsWorker.ValidateOffset(settings.GetSettings().SymbolsCount, offset))
+                    {
+                        MessageBox.Show("Значение смещения не соответствует допустимому диапазону.",
+                            "Ошибка",
+                            MessageBoxButton.OK,
+                            MessageBoxImage.Error);
+                        return;
+                    }
+
+                    _cryptography = new ROT(offset, settings, rightOffset);
+
                     break;
                 default:
                     _cryptography = new AtbashMethod(settings);

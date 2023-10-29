@@ -24,8 +24,12 @@ namespace Atbash.LanguageSettings
         {
             if (index < 0)
                 return _alphabet[(_alphabet.Length - 1) + index];
-            else if (index >= _alphabet.Length)
-                return _alphabet[1 + index];
+            else if (index > (_alphabet.Length - 1))
+                return _alphabet[Math.Abs((_alphabet.Length - 1) - index)];
+            else if (index == 0)
+            {
+                return _alphabet[1];
+            }
             else
                 return _alphabet[index];
         }
@@ -34,5 +38,6 @@ namespace Atbash.LanguageSettings
         {
             return new CyrillicLanguageSettings();
         }
+
     }
 }

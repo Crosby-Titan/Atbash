@@ -20,10 +20,10 @@ namespace Atbash.Extensions
 
         public static int GetLatinOrderNumber(this Encoding encoding, char c)
         {
-            int code = Math.Abs(encoding.GetSymbolCode('a') - 1 - c);
+            int code = Math.Abs(encoding.GetSymbolCode('a') - encoding.GetSymbolCode(c));
 
-            if (code < encoding.GetSymbolCode('a'))
-                return encoding.GetLatinOrderNumber('z') - code;
+            if (code < 0)
+                return encoding.GetSymbolCode('z') + code;
             else if (code > encoding.GetSymbolCode('z'))
                 return encoding.GetSymbolCode('a') + (encoding.GetSymbolCode('z') - code);
             else

@@ -72,5 +72,15 @@ namespace Atbash.Reflection
                     return string.Empty;
             }
         }
+
+        public static bool ValidateOffset(int alphabetCount,int offset)
+        {
+            if (offset < 0 || offset > alphabetCount)
+            {
+                return false;
+            }
+
+            return true;
+        }
     }
 }
