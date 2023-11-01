@@ -35,7 +35,7 @@ namespace Atbash.Reflection
         {
             dynamic? data = null;
 
-            using (var deserializeStream = new FileStream($"SerializedData\\{fileName}.json", FileMode.Open))
+            using (var deserializeStream = new FileStream($"JsonData\\{fileName}.json", FileMode.Open))
             {
                 data = JsonSerializer.Deserialize(deserializeStream, typeof(ExpandoObject));
             }
@@ -68,9 +68,47 @@ namespace Atbash.Reflection
                 case JsonValueKind.True:
                 case JsonValueKind.False:
                     return bool.Parse($"{data}");
+                case JsonValueKind.Object:
+                    return LoadMorseCode($"{data}");
                 default:
                     return string.Empty;
             }
+        }
+
+        public static IDictionary<string, string> LoadMorseCode(string str)
+        {
+            var dictionary = new Dictionary<string, string>();
+
+            for (int i = 0; i < str.Length; i++)
+            {
+                if (dictionary.ContainsKey(str[i].ToString()) || str[i] == ' ')
+                    continue;
+
+                string key = str[i].ToString();
+
+                if (key == "X")
+                    break;
+
+                string value = "";
+
+                for (int j = i + 2; j < str.Length; j++)
+                {
+                    if (str[j] == ',')
+                    {
+                        i = j + 1;
+                        break;
+                    }
+
+                    if (str[j] != ' ')
+                        value += str[j];
+                }
+
+                dictionary.Add(key, value);
+
+
+            }
+
+            return dictionary;
         }
 
         public static bool ValidateOffset(int alphabetCount,int offset)
